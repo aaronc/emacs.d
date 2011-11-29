@@ -7,7 +7,14 @@
   (package-refresh-contents))
 
 ;; Add in your own as you wish:
-(defvar my-packages '(starter-kit starter-kit-lisp starter-kit-bindings undo-tree)
+(defvar my-packages '(starter-kit
+                      starter-kit-lisp
+                      starter-kit-bindings
+                      undo-tree
+                      clojure-mode
+                      slime
+                      rainbow-delimiters
+                     )
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -65,7 +72,7 @@
 (global-set-key [(f11)] 'buffer-menu)
 (global-set-key [(f10)] 'ido-switch-buffer)
 
-                                        ; Map shift-tab to reduce indent
+; Map shift-tab to reduce indent
 ; http://stackoverflow.com/questions/2249955/emacs-shift-tab-to-left-shift-the-block/2250155#2250155
 (global-set-key (kbd "<S-tab>") 'un-indent-by-removing-4-spaces)
 (defun un-indent-by-removing-4-spaces ()
