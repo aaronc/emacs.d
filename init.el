@@ -21,10 +21,6 @@
     (when (not (package-installed-p p))
         (package-install p)))
 
-(add-to-list 'load-path "~/.emacs.d/evil")
-(require 'evil)  
-(evil-mode 1)
-
 ;(set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-13")
 (if (eq system-type 'windows-nt) 
     (set-face-attribute 'default nil :font "Consolas-14")
@@ -88,3 +84,5 @@
         (untabify (match-beginning 0) (match-end 0)))
       (when (looking-at "^    ")
         (replace-match "")))))
+
+(require 'init-evil)
