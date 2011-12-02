@@ -13,7 +13,10 @@
                       undo-tree
                       clojure-mode
                       slime
+                      slime-repl
                       rainbow-delimiters
+                      auto-complete
+                      ac-slime
                      )
    "A list of packages to ensure are installed at launch.")
 
@@ -85,4 +88,9 @@
       (when (looking-at "^    ")
         (replace-match "")))))
 
+(setq dotfiles-dir (file-name-directory
+                    (or (buffer-file-name) load-file-name)))
+(add-to-list 'load-path dotfiles-dir)
+
 (require 'init-evil)
+(require 'init-auto-complete)
