@@ -88,3 +88,5 @@
     (add-hook 'javascript-mode-hook 'javascript-custom-setup)
     (defun javascript-custom-setup ()
       (moz-minor-mode 1))
+
+(setq inferior-lisp-program "script/repl")
