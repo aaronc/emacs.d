@@ -18,7 +18,7 @@
                       rainbow-delimiters
                       auto-complete
                       ac-slime
-                     )
+                      )
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -26,13 +26,27 @@
         (package-install p)))
 
 (add-hook 'clojure-mode-hook
-          (defun turn-on-clojure-test-mode ()
-            (clojure-test-mode 1)))
+          (lambda ()
+            (clojure-test-mode 1)
+            (auto-complete-mode 1)))
+
+
+(add-hook 'inferior-lisp-mode-hook
+          (lambda ()
+            (auto-complete-mode 1)))
 
 (add-hook 'slime-repl-mode-hook
           (defun clojure-mode-slime-font-lock ()
             (let (font-lock-mode)
               (clojure-mode-font-lock-setup))))
+
+(defun inf-lisp-switch-ns ()
+  (interactive)
+  (save-excursion
+    (beginning-of-buffer)
+    (lisp-eval-defun)))
+
+(global-set-key "\C-c\C-n" 'inf-lisp-switch-ns)
 
 ;(set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-13")
 (if (eq system-type 'windows-nt) 
@@ -41,7 +55,7 @@
 
 
 
-(load-theme 'manoj-dark)
+;(load-theme 'manoj-dark)
 
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "C-<") 'previous-buffer)
@@ -90,3 +104,18 @@
       (moz-minor-mode 1))
 
 (setq inferior-lisp-program "script/repl")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(load-theme 'zenburn)
+
+(require 'auto-complete)
