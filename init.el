@@ -17,8 +17,7 @@
                       slime-repl
                       rainbow-delimiters
                       auto-complete
-                      ac-slime
-                      )
+                      ac-slime)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -48,14 +47,16 @@
 
 (global-set-key "\C-c\C-n" 'inf-lisp-switch-ns)
 
+(add-hook 'slime-mode-hook
+          (defun slime-save-compile-load ()
+            (save-buffer)
+            (slime-compile-and-load-file)))
+
 ;(set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-13")
 (if (eq system-type 'windows-nt) 
     (set-face-attribute 'default nil :font "Consolas-14")
     (set-face-attribute 'default nil :font "Inconsolata-15"))
 
-
-
-;(load-theme 'manoj-dark)
 
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "C-<") 'previous-buffer)
@@ -109,7 +110,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
+ '(custom-safe-themes (quote ("71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -119,3 +120,28 @@
 (load-theme 'zenburn)
 
 (require 'auto-complete)
+;;; Usage
+;; Run M-x moz-reload-mode to switch moz-reload on/off in the
+;; current buffer.
+;; When active, every change in the buffer triggers Firefox
+;; to reload its current page.
+
+(define-minor-mode moz-reload-mode
+  "Moz Reload Minor Mode"
+  nil " Reload" nil
+  (if moz-reload-mode
+      ;; Edit hook buffer-locally.
+      (add-hook 'post-command-hook 'moz-reload nil t)
+    (remove-hook 'post-command-hook 'moz-reload t)))
+
+(defun moz-reload ()
+  (when (buffer-modified-p)
+    (save-buffer)
+    (moz-firefox-reload)))
+
+(defun moz-firefox-reload ()
+  (comint-send-string (inferior-moz-process) "BrowserReload();"))
+
+(require 'auto-save)
+
+(set-face-background 'modeline "dark slate blue")
