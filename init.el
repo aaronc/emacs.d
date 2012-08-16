@@ -17,7 +17,8 @@
                       slime-repl
                       rainbow-delimiters
                       auto-complete
-                      ac-slime)
+                      ac-slime
+                      zenburn-theme)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -53,9 +54,10 @@
             (slime-compile-and-load-file)))
 
 ;(set-face-attribute 'default nil :font "Bitstream Vera Sans Mono-13")
-(if (eq system-type 'windows-nt) 
-    (set-face-attribute 'default nil :font "Consolas-14")
-    (set-face-attribute 'default nil :font "Inconsolata-15"))
+(when (display-graphic-p)
+  (if (eq system-type 'windows-nt) 
+      (set-face-attribute 'default nil :font "Consolas-14")
+    (set-face-attribute 'default nil :font "Inconsolata-15")))
 
 
 (global-set-key (kbd "C-,") 'other-window)
@@ -142,6 +144,6 @@
 (defun moz-firefox-reload ()
   (comint-send-string (inferior-moz-process) "BrowserReload();"))
 
-(require 'auto-save)
+;(require 'auto-save)
 
 (set-face-background 'modeline "dark slate blue")
