@@ -109,6 +109,9 @@
 (define-key evil-normal-state-map (kbd "C-M-d") 'paredit-forward-down)
 (define-key evil-normal-state-map (kbd "M-d") 'paredit-forward-kill-word)
 
+(require 'window-numbering)
+(window-numbering-mode 1)
+
 
 (require 'moz)
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
