@@ -1,6 +1,8 @@
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+  '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
 (when (not package-archive-contents)
@@ -18,18 +20,24 @@
                       rainbow-delimiters
                       auto-complete
                       ac-slime
-                      zenburn-theme)
+                      evil
+                      surround
+                      zenburn-theme
+                      fill-column-indicator
+                      solarized-theme)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
     (when (not (package-installed-p p))
         (package-install p)))
 
+(setq fci-rule-column 80)
+
 (add-hook 'clojure-mode-hook
           (lambda ()
             (clojure-test-mode 1)
-            (auto-complete-mode 1)))
-
+            (auto-complete-mode 1)
+            (fci-mode 1)))
 
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
@@ -126,14 +134,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("a7e8dc00fc8043439a738a15e2f593b8e9b2492f" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
+ '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "9f443833deb3412a34d2d2c912247349d4bd1b09e0f5eaba11a3ea7872892000" "a7e8dc00fc8043439a738a15e2f593b8e9b2492f" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-(load-theme 'zenburn)
+(load-theme 'solarized-light)
 
 (require 'auto-complete)
 ;;; Usage
@@ -160,7 +168,7 @@
 
 ;(require 'auto-save)
 
-(set-face-background 'modeline "dark slate blue")
+(set-face-background 'mode-line "Dark Slate Blue")
 (setq evil-normal-state-cursor '("SeaGreen4" box))
 (setq evil-insert-state-cursor '("SeaGreen3" bar))
 (setq evil-emacs-state-cursor '("red" box))
