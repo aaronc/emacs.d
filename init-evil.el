@@ -1,5 +1,5 @@
-(add-to-list 'load-path "~/.emacs.d/evil")
-(add-to-list 'load-path "~/.emacs.d/evil-surround")
+;(add-to-list 'load-path "~/.emacs.d/evil")
+;(add-to-list 'load-path "~/.emacs.d/evil-surround")
 (require 'evil)  
 (evil-mode 1)
 

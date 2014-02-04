@@ -67,6 +67,12 @@
       (set-face-attribute 'default nil :font "Consolas-14")
     (set-face-attribute 'default nil :font "Inconsolata-15")))
 
+(when (eq system-type 'darwin) ;; mac specific settings
+  (setq mac-option-modifier 'alt)
+  (setq mac-command-modifier 'meta)
+  (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
+  )
+
 
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "C-<") 'previous-buffer)
