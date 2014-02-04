@@ -87,6 +87,8 @@
 (global-set-key [(f12)] 'ibuffer)
 (global-set-key [(f11)] 'buffer-menu)
 (global-set-key [(f10)] 'ido-switch-buffer)
+(global-set-key (kbd "M-a") 'ido-switch-buffer)
+(global-set-key (kbd "M-b") 'buffer-menu)
 
 ; Map shift-tab to reduce indent
 ; http://stackoverflow.com/questions/2249955/emacs-shift-tab-to-left-shift-the-block/2250155#2250155
