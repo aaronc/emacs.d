@@ -22,17 +22,21 @@
                       ac-slime
                       zenburn-theme
                       evil
-                      solarized-theme)
+                      solarized-theme
+                      cider
+                      midje-mode)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
     (when (not (package-installed-p p))
         (package-install p)))
 
+(require 'midje-mode)
+
 (add-hook 'clojure-mode-hook
           (lambda ()
-            (clojure-test-mode 1)
-            (auto-complete-mode 1)))
+            (auto-complete-mode 1)
+            (midje-mode 1)))
 
 
 (add-hook 'inferior-lisp-mode-hook
@@ -66,6 +70,7 @@
 (when (eq system-type 'darwin) ;; mac specific settings
   (setq mac-option-modifier 'alt)
   (setq mac-command-modifier 'meta)
+  (menu-bar-mode 1)
   (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
   )
 
@@ -83,6 +88,9 @@
 (global-set-key [(f12)] 'ibuffer)
 (global-set-key [(f11)] 'buffer-menu)
 (global-set-key [(f10)] 'ido-switch-buffer)
+(global-set-key (kbd "M-a") 'ido-switch-buffer)
+(global-set-key (kbd "M-b") 'buffer-menu)
+
 
 ; Map shift-tab to reduce indent
 ; http://stackoverflow.com/questions/2249955/emacs-shift-tab-to-left-shift-the-block/2250155#2250155
@@ -143,7 +151,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-(load-theme 'zenburn)
+;;(load-theme 'zenburn)
+(load-theme 'solarized-light)
 
 (require 'auto-complete)
 ;;; Usage
@@ -173,5 +182,17 @@
 (setq evil-normal-state-cursor '("SeaGreen4" box))
 (setq evil-insert-state-cursor '("SeaGreen3" bar))
 (setq evil-emacs-state-cursor '("red" box))
-;;(set-face-background 'mode-line "dark slate blue")
+(set-face-background 'mode-line "dark slate blue")
 
+
+(define-minor-mode auto-reload-mode
+  "Auto Reload Minor Mode"
+  nil " Reload" nil
+  (if auto-reload-mode
+      ;; Edit hook buffer-locally.
+      (add-hook 'post-command-hook 'auto-reload nil t)
+    (remove-hook 'post-command-hook 'auto-reload t)))
+
+(defun auto-reload ()
+  (when (buffer-modified-p)
+    (save-buffer)))
