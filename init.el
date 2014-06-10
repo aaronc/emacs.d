@@ -26,7 +26,10 @@
                       cider
                       midje-mode
                       surround
-                      fill-column-indicator)
+                      exec-path-from-shell
+                      fill-column-indicator
+                      jade-mode
+                      editorconfig)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -36,11 +39,16 @@
 (require 'midje-mode)
 (setq fci-rule-column 80)
 
+(add-hook 'text-mode-hook
+          (lambda ()
+            (fci-mode 1)))
+
 (add-hook 'clojure-mode-hook
           (lambda ()
             (auto-complete-mode 1)
             (midje-mode 1)))
-            (fci-mode 1)))
+
+(setq cider-prompt-save-file-on-load nil)
 
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
@@ -77,6 +85,8 @@
   (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
   )
 
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "C-<") 'previous-buffer)
@@ -147,7 +157,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "9f443833deb3412a34d2d2c912247349d4bd1b09e0f5eaba11a3ea7872892000" "a7e8dc00fc8043439a738a15e2f593b8e9b2492f" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
+ '(custom-safe-themes (quote ("75c9f0b0499ecdd0c856939a5de052742d85af81814e84faa666522c2bba7e85" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "9f443833deb3412a34d2d2c912247349d4bd1b09e0f5eaba11a3ea7872892000" "a7e8dc00fc8043439a738a15e2f593b8e9b2492f" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -197,3 +207,10 @@
 (defun auto-reload ()
   (when (buffer-modified-p)
     (save-buffer)))
+
+(defun piggieback-swap-cljs-repl ()
+  (interactive)
+  (nrepl-send-request '("op" "piggieback-repl-info")
+                      (lambda (res) (print res))))
+
+(require 'editorconfig)
