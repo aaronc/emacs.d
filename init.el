@@ -14,7 +14,6 @@
                       starter-kit-bindings
                       undo-tree
                       clojure-mode
-                      clojure-test-mode
                       clojurescript-mode
                       slime-repl
                       rainbow-delimiters
