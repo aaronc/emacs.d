@@ -213,3 +213,6 @@
                       (lambda (res) (print res))))
 
 (require 'editorconfig)
+
+(global-set-key (kbd "C-?") 'help-command)
+(global-set-key (kbd "C-h") 'delete-backward-char)
