@@ -58,6 +58,10 @@
             (let (font-lock-mode)
               (clojure-mode-font-lock-setup))))
 
+(add-hook 'paredit-mode-hook
+         (lambda ()
+           (define-key evil-insert-state-map (kbd "C-h") 'paredit-backward-delete)))
+
 (defun inf-lisp-switch-ns ()
   (interactive)
   (save-excursion
@@ -139,6 +143,9 @@
 (define-key evil-normal-state-map (kbd "C-M-d") 'paredit-forward-down)
 (define-key evil-normal-state-map (kbd "M-d") 'paredit-forward-kill-word)
 
+(define-key evil-normal-state-map (kbd "C-h") 'evil-backward-char)
+
+
 (require 'window-numbering)
 (window-numbering-mode 1)
 
@@ -215,4 +222,5 @@
 (require 'editorconfig)
 
 (global-set-key (kbd "C-?") 'help-command)
+
 (global-set-key (kbd "C-h") 'delete-backward-char)
