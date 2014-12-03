@@ -22,6 +22,7 @@
     magit
     projectile
     helm-projectile
+    company
 
     ;;;; Colors & Appearance
     solarized-theme
@@ -90,8 +91,10 @@
 ;; magit
 
 ;; projectile
-
 (projectile-global-mode)
+
+;; company
+(add-hook 'after-init-hook 'global-company-mode)
 
 ;;;; Colors & Appearance
 
