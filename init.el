@@ -12,7 +12,7 @@
 ;; Add in your own as you wish:
 (defvar my-packages
   '(
-    ;;;; Essentials
+    ;;;; Globals
     helm
     evil
     window-numbering
@@ -43,7 +43,7 @@
     (when (not (package-installed-p p))
         (package-install p)))
 
-;;;; Essentials
+;;;; Globals
 
 (global-set-key (kbd "C-,") 'other-window)
 (scroll-bar-mode -1) ;; disables scroll bars
