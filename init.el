@@ -49,6 +49,8 @@
 ;;;; Globals
 
 (global-set-key (kbd "C-,") 'other-window)
+(global-set-key (kbd "M-/") 'comment-or-uncomment-region)
+
 (scroll-bar-mode -1) ;; disables scroll bars
 (setq visible-bell 1) ;; disables audible bells & enables visible bell
 
@@ -112,6 +114,58 @@
 (smartparens-global-mode 1)
 (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+
+(define-key sp-keymap (kbd "M-k") 'sp-backward-sexp)
+(define-key sp-keymap (kbd "M-j") 'sp-next-sexp)
+
+(define-key sp-keymap (kbd "M-J") 'sp-down-sexp)
+(define-key sp-keymap (kbd "M-K") 'sp-backward-up-sexp)
+
+(define-key sp-keymap (kbd "M-l") 'sp-forward-sexp)
+(define-key sp-keymap (kbd "M-h") 'sp-previous-sexp)
+
+(define-key sp-keymap (kbd "M-u") 'sp-up-sexp)
+(define-key sp-keymap (kbd "M-d") 'sp-backward-down-sexp)
+(define-key sp-keymap (kbd "M-B") 'sp-beginning-of-sexp)
+(define-key sp-keymap (kbd "M-W") 'sp-end-of-sexp)
+
+(define-key sp-keymap (kbd "M-w") 'sp-forward-symbol)
+(define-key sp-keymap (kbd "M-b") 'sp-backward-symbol)
+
+(define-key emacs-lisp-mode-map (kbd ")") 'sp-up-sexp)
+
+(define-key sp-keymap (kbd "C-M-t") 'sp-transpose-sexp)
+
+(define-key sp-keymap (kbd "C-M-D") 'sp-kill-sexp)
+(define-key sp-keymap (kbd "C-M-y") 'sp-copy-sexp)
+
+;; (define-key sp-keymap (kbd "C-M-k") 'sp-unwrap-sexp)
+;; (define-key sp-keymap (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
+
+(define-key sp-keymap (kbd "C-M-l") 'sp-forward-slurp-sexp)
+(define-key sp-keymap (kbd "C-M-h") 'sp-forward-barf-sexp)
+(define-key sp-keymap (kbd "C-M-H") 'sp-backward-slurp-sexp)
+(define-key sp-keymap (kbd "C-M-L") 'sp-backward-barf-sexp)
+
+;; (define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
+;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
+;; (define-key sp-keymap (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
+;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
+
+;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
+;; (define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
+;; (define-key sp-keymap (kbd "C-M-]") 'sp-select-next-thing)
+
+;; (define-key sp-keymap (kbd "H-t") 'sp-prefix-tag-object)
+;; (define-key sp-keymap (kbd "H-p") 'sp-prefix-pair-object)
+;; (define-key sp-keymap (kbd "H-s c") 'sp-convolute-sexp)
+;; (define-key sp-keymap (kbd "H-s a") 'sp-absorb-sexp)
+;; (define-key sp-keymap (kbd "H-s e") 'sp-emit-sexp)
+;; (define-key sp-keymap (kbd "H-s p") 'sp-add-to-previous-sexp)
+;; (define-key sp-keymap (kbd "H-s n") 'sp-add-to-next-sexp)
+;; (define-key sp-keymap (kbd "H-s j") 'sp-join-sexp)
+;; (define-key sp-keymap (kbd "H-s s") 'sp-split-sexp)
+
 
 ;; rainbow-delimiters
 (require 'rainbow-delimiters)
