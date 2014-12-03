@@ -32,9 +32,9 @@
 
     ;;;; Clojure
     clojure-mode
-    cider
+    A
     )
-   "A list of packages to ensure are installed at launch.")
+   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -46,7 +46,8 @@
 ;;;; Essentials
 
 (global-set-key (kbd "C-,") 'other-window)
-(scroll-bar-mode -1)
+(scroll-bar-mode -1) ;; disables scroll bars
+(setq visible-bell 1) ;; disables audible bells & enables visible bell
 
 ;; evil
 
@@ -79,7 +80,7 @@
 (setq fci-rule-color "#DDD")
 (add-hook 'text-mode-hook 'fci-mode)
 
-;; exec-path-from-shell
+;; exec-path-from-shell - fix for OS X path problem
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
