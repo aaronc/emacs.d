@@ -14,7 +14,6 @@
                       starter-kit-bindings
                       undo-tree
                       clojure-mode
-                      clojure-test-mode
                       clojurescript-mode
                       slime-repl
                       rainbow-delimiters
@@ -29,7 +28,8 @@
                       exec-path-from-shell
                       fill-column-indicator
                       jade-mode
-                      editorconfig)
+                      editorconfig
+                      haskell-mode)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -46,7 +46,15 @@
 (add-hook 'clojure-mode-hook
           (lambda ()
             (auto-complete-mode 1)
+            (rainbow-delimiters-mode 1)
             (midje-mode 1)))
+
+(add-hook 'clojurescript-mode-hook
+          (lambda ()
+            (auto-complete-mode 1)
+            (rainbow-delimiters-mode 1)
+            (paredit-mode 1)))
+
 
 (setq cider-prompt-save-file-on-load nil)
 
@@ -66,6 +74,7 @@
     (lisp-eval-defun)))
 
 (global-set-key "\C-c\C-n" 'inf-lisp-switch-ns)
+(global-set-key (kbd "M-C-]") 'comment-or-uncomment-region)
 
 (add-hook 'slime-mode-hook
           (defun slime-save-compile-load ()
@@ -165,7 +174,7 @@
  ;; If there is more than one, they won't work right.
  )
 ;;(load-theme 'zenburn)
-(load-theme 'solarized-light)
+(load-theme 'solarized-dark)
 
 (require 'auto-complete)
 ;;; Usage
