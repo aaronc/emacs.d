@@ -20,6 +20,8 @@
     fill-column-indicator
     exec-path-from-shell
     magit
+    projectile
+    helm-projectile
 
     ;;;; Colors & Appearance
     solarized-theme
@@ -87,6 +89,9 @@
 
 ;; magit
 
+;; projectile
+
+(projectile-global-mode)
 
 ;;;; Colors & Appearance
 
