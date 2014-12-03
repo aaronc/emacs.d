@@ -92,6 +92,8 @@
 
 ;; magit
 
+(global-set-key (kbd "C-x g") 'magit-status)
+
 ;; projectile
 (projectile-global-mode)
 
@@ -111,7 +113,10 @@
 
 ;; smartparens
 (require 'smartparens-config)
+
 (smartparens-global-mode 1)
+(show-smartparens-global-mode t)
+
 (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
 
