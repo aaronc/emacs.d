@@ -58,6 +58,7 @@
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "M-/") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-?") 'help-command)
+(global-set-key (kbd "C-S-s") 'save-buffer)
 
 (scroll-bar-mode -1) ;; disables scroll bars
 (setq visible-bell 1) ;; disables audible bells & enables visible bell
@@ -119,6 +120,16 @@
 ;; company
 (add-hook 'after-init-hook 'global-company-mode)
 
+(global-set-key (kbd "C-SPC") 'company-complete)
+
+(defun complete-or-indent ()
+  (interactive)
+  (if (company-manual-begin)
+      (company-complete-common)
+    (indent-according-to-mode)))
+
+(global-set-key (kbd "TAB") 'complete-or-indent)
+
 ;; idle-highlight-mode
 
 ;;;; Colors & Appearance
@@ -140,6 +151,11 @@
 
 (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+
+(define-minor-mode sp-evil-lisp-mode "Smartparens Evil Lisp Mode"
+  :keymap (make-sparse-keymap))
+(evil-define-key 'insert 'sp-evil-lisp-mode-map "DEL" 'sp-backward-delete-char)
+(add-hook 'clojure-mode-hook 'sp-evil-lisp-mode-map)
 
 (define-key sp-keymap (kbd "M-k") 'sp-backward-sexp)
 (define-key sp-keymap (kbd "M-j") 'sp-next-sexp)
@@ -169,13 +185,15 @@
 ;; (define-key sp-keymap (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
 
 (define-key sp-keymap (kbd "C-M-l") 'sp-forward-slurp-sexp)
+(define-key sp-keymap (kbd "C-<left>") 'sp-forward-barf-sexp)
+(define-key sp-keymap (kbd "C-<right>") 'sp-forward-slurp-sexp)
 (define-key sp-keymap (kbd "C-M-h") 'sp-forward-barf-sexp)
 (define-key sp-keymap (kbd "C-M-S-h") 'sp-backward-slurp-sexp)
 (define-key sp-keymap (kbd "C-M-S-l") 'sp-backward-barf-sexp)
 
 ;; (define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
 ;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
-;; (define-key sp-keymap (kbd "C-M-<backspace>") 'sp-splice-sexp-killing-backward)
+(define-key sp-keymap (kbd "C-M-S-j") 'sp-splice-sexp-killing-backward)
 ;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
 
 ;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
