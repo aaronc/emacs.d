@@ -178,7 +178,7 @@
 
 (define-key sp-keymap (kbd "C-M-t") 'sp-transpose-sexp)
 
-(define-key sp-keymap (kbd "C-M-D") 'sp-kill-sexp)
+(define-key sp-keymap (kbd "C-k") 'sp-kill-sexp)
 (define-key sp-keymap (kbd "C-M-y") 'sp-copy-sexp)
 
 ;; (define-key sp-keymap (kbd "C-M-k") 'sp-unwrap-sexp)
@@ -194,6 +194,7 @@
 ;; (define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
 ;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
 (define-key sp-keymap (kbd "C-M-S-j") 'sp-splice-sexp-killing-backward)
+(define-key sp-keymap (kbd "C-M-u") 'sp-splice-sexp-killing-backward)
 ;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
 
 ;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
