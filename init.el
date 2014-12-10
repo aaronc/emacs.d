@@ -28,7 +28,8 @@
                       exec-path-from-shell
                       fill-column-indicator
                       jade-mode
-                      editorconfig)
+                      editorconfig
+		      ac-cider)
    "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -60,6 +61,10 @@
           (defun clojure-mode-slime-font-lock ()
             (let (font-lock-mode)
               (clojure-mode-font-lock-setup))))
+
+(add-hook 'paredit-mode-hook
+         (lambda ()
+           (define-key evil-insert-state-map (kbd "C-h") 'paredit-backward-delete)))
 
 (defun inf-lisp-switch-ns ()
   (interactive)
@@ -142,6 +147,9 @@
 (define-key evil-normal-state-map (kbd "C-M-d") 'paredit-forward-down)
 (define-key evil-normal-state-map (kbd "M-d") 'paredit-forward-kill-word)
 
+(define-key evil-normal-state-map (kbd "C-h") 'evil-backward-char)
+
+
 (require 'window-numbering)
 (window-numbering-mode 1)
 
@@ -216,3 +224,20 @@
                       (lambda (res) (print res))))
 
 (require 'editorconfig)
+
+;;(global-set-key (kbd "C-?") 'help-command)
+
+(global-set-key (kbd "C-h") 'delete-backward-char)
+
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+    '(add-to-list 'ac-modes 'cider-mode))
+
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions '(auto-complete)))
+
+(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
