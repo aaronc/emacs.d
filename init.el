@@ -14,7 +14,6 @@
                       starter-kit-bindings
                       undo-tree
                       clojure-mode
-                      clojure-test-mode
                       clojurescript-mode
                       slime-repl
                       rainbow-delimiters
@@ -48,7 +47,10 @@
             (auto-complete-mode 1)
             (midje-mode 1)))
 
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+
 (setq cider-prompt-save-file-on-load nil)
+(setq cider-auto-select-error-buffer nil)
 
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
