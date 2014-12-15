@@ -134,12 +134,15 @@
 
 ;;;; Colors & Appearance
 
+(load-theme 'solarized-light t)
+
 (when (display-graphic-p)
   (if (eq system-type 'windows-nt) 
       (set-face-attribute 'default nil :font "Consolas-14")
-    (set-face-attribute 'default nil :font "Inconsolata-15")))
-
-(load-theme 'solarized-light t)
+    (progn
+      (set-frame-parameter (selected-frame) 'alpha '(60 60))
+      (add-to-list 'default-frame-alist '(alpha 60 60))
+      (set-face-attribute 'default nil :background "black" :foreground "white" :font "Inconsolata-18"))))
 
 ;;;; Lisp
 
