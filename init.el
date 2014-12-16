@@ -148,6 +148,7 @@
 	 (load-theme 'solarized-light)
 	 (set-frame-parameter nil 'alpha '(100 100)))
      (progn
+       (load-theme 'solarized-dark t)
        (set-frame-parameter nil 'alpha '(60 60))
        ;;(add-to-list 'default-frame-alist '(alpha 65 65))
        (set-face-attribute 'default nil :background "black" :foreground "white"))))
