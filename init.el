@@ -137,12 +137,20 @@
 (load-theme 'solarized-light t)
 
 (when (display-graphic-p)
-  (if (eq system-type 'windows-nt) 
-      (set-face-attribute 'default nil :font "Consolas-14")
-    (progn
-      (set-frame-parameter (selected-frame) 'alpha '(60 60))
-      (add-to-list 'default-frame-alist '(alpha 60 60))
-      (set-face-attribute 'default nil :background "black" :foreground "white" :font "Inconsolata-18"))))
+  (if (eq system-type 'windows-nt)
+    (set-face-attribute 'default nil :font "Consolas-14")
+    (set-face-attribute 'default nil :font "Inconsolata-18")))
+
+(defun toggle-transparency ()
+   (interactive)
+   (if (/= (cadr (frame-parameter nil 'alpha)) 100)
+       (progn
+	 (load-theme 'solarized-light)
+	 (set-frame-parameter nil 'alpha '(100 100)))
+     (progn
+       (set-frame-parameter nil 'alpha '(60 60))
+       ;;(add-to-list 'default-frame-alist '(alpha 65 65))
+       (set-face-attribute 'default nil :background "black" :foreground "white"))))
 
 ;;;; Lisp
 
