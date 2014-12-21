@@ -59,6 +59,8 @@
 (global-set-key (kbd "M-/") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-?") 'help-command)
 (global-set-key (kbd "C-S-s") 'save-buffer)
+(global-set-key (kbd "C-<") 'previous-buffer)
+(global-set-key (kbd "C->") 'next-buffer)
 
 (scroll-bar-mode -1) ;; disables scroll bars
 (setq visible-bell 1) ;; disables audible bells & enables visible bell
