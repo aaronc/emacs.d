@@ -168,8 +168,8 @@
 
 (define-minor-mode sp-evil-lisp-mode "Smartparens Evil Lisp Mode"
   :keymap (make-sparse-keymap))
-(evil-define-key 'insert 'sp-evil-lisp-mode-map "DEL" 'sp-backward-delete-char)
-(add-hook 'clojure-mode-hook 'sp-evil-lisp-mode-map)
+(evil-define-key 'insert sp-evil-lisp-mode-map [backspace] 'sp-backward-delete-char)
+(add-hook 'clojure-mode-hook 'sp-evil-lisp-mode)
 
 (define-key sp-keymap (kbd "M-k") 'sp-backward-sexp)
 (define-key sp-keymap (kbd "M-j") 'sp-next-sexp)
@@ -286,3 +286,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
