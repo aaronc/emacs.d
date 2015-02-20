@@ -5,8 +5,8 @@
             '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
+;; (add-to-list 'package-archives
+;; 	     '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
 ;; Add in your own as you wish:
@@ -43,6 +43,9 @@
     clojure-mode
     cider
     clj-refactor
+
+    ;; Haskell
+ 
     )
   "cider list of packages to ensure are installed at launch.")
 
@@ -66,6 +69,12 @@
 (setq visible-bell 1) ;; disables audible bells & enables visible bell
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+
+;; indentation
+
+(setq-default indent-tabs-mode nil)
+(setq tab-width 2)
+
 
 ;; helm
 
@@ -130,13 +139,13 @@
       (company-complete-common)
     (indent-according-to-mode)))
 
-(global-set-key (kbd "TAB") 'complete-or-indent)
+;; (global-set-key (kbd "TAB") 'complete-or-indent)
 
 ;; idle-highlight-mode
 
 ;;;; Colors & Appearance
 
-(load-theme 'solarized-light t)
+(load-theme 'solarized-dark t)
 
 (when (display-graphic-p)
   (if (eq system-type 'windows-nt)
@@ -237,7 +246,13 @@
 
 ;; cider
 
+(require 'cider)
+
 (setq cider-prompt-save-file-on-load nil)
+(setq cider-auto-select-error-buffer nil)
+(setq cider-show-error-buffer nil)
+(define-key cider-mode-map (kbd "C-c C-v") 'cider-visit-error-buffer)
+(cider-repl-toggle-pretty-printing)
 
 ;; clj-refactor
 
