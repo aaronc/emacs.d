@@ -58,6 +58,8 @@
 
 ;;;; Globals
 
+(prefer-coding-system 'utf-8)
+
 (global-set-key (kbd "C-,") 'other-window)
 (global-set-key (kbd "M-/") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-?") 'help-command)
@@ -81,6 +83,10 @@
 (require 'helm-config)
 (helm-mode 1)
 (global-set-key (kbd "M-x") 'helm-M-x)
+
+(setq helm-M-x-fuzzy-match 't) 
+(setq helm-buffers-fuzzy-matching 't) 
+(setq helm-recentf-fuzzy-match 't) 
 
 ;; smex
 (global-set-key (kbd "M-X") 'smex)
