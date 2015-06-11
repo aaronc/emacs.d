@@ -5,8 +5,8 @@
             '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-;; (add-to-list 'package-archives
-;; 	     '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+ 	     '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
 ;; Add in your own as you wish:
@@ -45,6 +45,9 @@
     clj-refactor
 
     ;; Haskell
+
+    ;; Markdown
+    markdown-mode
  
     )
   "cider list of packages to ensure are installed at launch.")
@@ -249,6 +252,9 @@
 ;;;; Clojure
 
 ;; clojure-mode
+
+(add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
+(add-to-list 'magic-mode-alist '(".* boot" . clojure-mode))
 
 ;; cider
 
