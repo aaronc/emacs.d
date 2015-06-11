@@ -5,8 +5,8 @@
             '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-;; (add-to-list 'package-archives
-;; 	     '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
 ;; Add in your own as you wish:
@@ -29,6 +29,7 @@
     helm-company
     idle-highlight-mode
     minimap
+    dedicated
 
     ;;;; Colors & Appearance
     solarized-theme
@@ -37,6 +38,8 @@
 
     ;;;; Lisp
     smartparens
+    paredit
+    evil-paredit
     rainbow-delimiters
 
     ;;;; Clojure
@@ -71,6 +74,14 @@
 (setq visible-bell 1) ;; disables audible bells & enables visible bell
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+
+(defun switch-to-minibuffer-window ()
+  "switch to minibuffer window (if active)"
+  (interactive)
+  (when (active-minibuffer-window)
+    (select-window (active-minibuffer-window))))
+
+(global-set-key (kbd "<f7>") 'switch-to-minibuffer-window)
 
 ;; indentation
 
@@ -156,21 +167,23 @@
 (when (display-graphic-p)
   (if (eq system-type 'windows-nt)
     (set-face-attribute 'default nil :font "Consolas-14")
-    (set-face-attribute 'default nil :font "Inconsolata-18")))
+    (set-face-attribute 'default nil :font "Inconsolata-14")))
 
-(defun toggle-transparency ()
-   (interactive)
-   (if (/= (cadr (frame-parameter nil 'alpha)) 100)
-       (progn
-	 (load-theme 'solarized-light)
-	 (set-frame-parameter nil 'alpha '(100 100)))
-     (progn
-       (load-theme 'solarized-dark t)
-       (set-frame-parameter nil 'alpha '(60 60))
-       ;;(add-to-list 'default-frame-alist '(alpha 65 65))
-       (set-face-attribute 'default nil :background "black" :foreground "white"))))
+(defun enable-transparency ()
+  (interactive)
+  (load-theme 'solarized-dark)
+  (set-frame-parameter nil 'alpha '(75 75))
+  (set-face-attribute 'default nil :background "black" :foreground "white"))
+
+(defun disable-transparency ()
+  (interactive)
+  (load-theme 'solarized-dark)
+  (set-frame-parameter nil 'alpha '(100 100)))
 
 ;;;; Lisp
+
+
+;; paredit
 
 ;; smartparens
 (require 'smartparens-config)
@@ -210,9 +223,6 @@
 (define-key sp-keymap (kbd "C-k") 'sp-kill-sexp)
 (define-key sp-keymap (kbd "C-M-y") 'sp-copy-sexp)
 
-;; (define-key sp-keymap (kbd "C-M-k") 'sp-unwrap-sexp)
-;; (define-key sp-keymap (kbd "M-<backspace>") 'sp-backward-unwrap-sexp)
-
 (define-key sp-keymap (kbd "C-M-l") 'sp-forward-slurp-sexp)
 (define-key sp-keymap (kbd "C-<left>") 'sp-forward-barf-sexp)
 (define-key sp-keymap (kbd "C-<right>") 'sp-forward-slurp-sexp)
@@ -220,26 +230,8 @@
 (define-key sp-keymap (kbd "C-M-S-h") 'sp-backward-slurp-sexp)
 (define-key sp-keymap (kbd "C-M-S-l") 'sp-backward-barf-sexp)
 
-;; (define-key sp-keymap (kbd "M-D") 'sp-splice-sexp)
-;; (define-key sp-keymap (kbd "C-M-<delete>") 'sp-splice-sexp-killing-forward)
 (define-key sp-keymap (kbd "C-M-S-j") 'sp-splice-sexp-killing-backward)
 (define-key sp-keymap (kbd "C-M-u") 'sp-splice-sexp-killing-backward)
-;; (define-key sp-keymap (kbd "C-S-<backspace>") 'sp-splice-sexp-killing-around)
-
-;; (define-key sp-keymap (kbd "C-]") 'sp-select-next-thing-exchange)
-;; (define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
-;; (define-key sp-keymap (kbd "C-M-]") 'sp-select-next-thing)
-
-;; (define-key sp-keymap (kbd "H-t") 'sp-prefix-tag-object)
-;; (define-key sp-keymap (kbd "H-p") 'sp-prefix-pair-object)
-;; (define-key sp-keymap (kbd "H-s c") 'sp-convolute-sexp)
-;; (define-key sp-keymap (kbd "H-s a") 'sp-absorb-sexp)
-;; (define-key sp-keymap (kbd "H-s e") 'sp-emit-sexp)
-;; (define-key sp-keymap (kbd "H-s p") 'sp-add-to-previous-sexp)
-;; (define-key sp-keymap (kbd "H-s n") 'sp-add-to-next-sexp)
-;; (define-key sp-keymap (kbd "H-s j") 'sp-join-sexp)
-;; (define-key sp-keymap (kbd "H-s s") 'sp-split-sexp)
-
 
 ;; rainbow-delimiters
 (require 'rainbow-delimiters)
@@ -263,8 +255,9 @@
 ;; clj-refactor
 
 (add-hook 'cider-mode-hook (lambda ()
-			     (clj-refactor-mode 1)
-			     (cljr-add-keybindings-with-prefix "C-x C-r")))
+			     ;; (clj-refactor-mode 1)
+			     ;; (cljr-add-keybindings-with-prefix "C-x C-r")
+                             ))
 
 ;;;; Platform-specific stuff
 
@@ -308,3 +301,23 @@
  ;; If there is more than one, they won't work right.
  )
 
+;; Dedicated mode copy
+(defvar dedicated-mode nil
+  "Mode variable for dedicated minor mode.")
+(make-variable-buffer-local 'dedicated-mode)
+
+(defun dedicated-mode (&optional arg)
+  "Dedicated minor mode."
+  (interactive "P")
+  (setq dedicated-mode (not dedicated-mode))
+  (set-window-dedicated-p (selected-window) dedicated-mode)
+  (if (not (assq 'dedicated-mode minor-mode-alist))
+      (setq minor-mode-alist
+            (cons '(dedicated-mode " D")
+                  minor-mode-alist))))
+
+(define-key cider-mode-map (kbd "C-c C-a")
+  (lambda ()
+    (interactive)
+    (cider-interactive-eval
+     "(require 'user)(user/go)")))
