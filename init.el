@@ -322,8 +322,13 @@
             (cons '(dedicated-mode " D")
                   minor-mode-alist))))
 
-(define-key cider-mode-map (kbd "C-c C-a")
-  (lambda ()
-    (interactive)
-    (cider-interactive-eval
-     "(require 'user)(user/go)")))
+;; (define-key cider-mode-map (kbd "C-c C-a")
+;;   (lambda ()
+;;     (interactive)
+;;     (cider-interactive-eval
+;;      "(require 'user)(user/go)")))
+
+;; markdown
+
+(add-hook 'markdown-mode 'visual-line-mode)
+
