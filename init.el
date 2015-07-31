@@ -48,11 +48,12 @@
     clj-refactor
 
     ;; Haskell
+    haskell-mode
+    purescript-mode
+    idris-mode
 
     ;; Markdown
-    markdown-mode
- 
-    )
+    markdown-mode)
   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
@@ -149,17 +150,15 @@
 (setq projectile-enable-caching t)
 
 ;; company
+(require 'company)
+
 (add-hook 'after-init-hook 'global-company-mode)
 
 (global-set-key (kbd "C-SPC") 'company-complete)
+(global-set-key (kbd "TAB") 'company-indent-or-complete-common)
 
-(defun complete-or-indent ()
-  (interactive)
-  (if (company-manual-begin)
-      (company-complete-common)
-    (indent-according-to-mode)))
-
-;; (global-set-key (kbd "TAB") 'complete-or-indent)
+(define-key company-active-map (kbd "C-p") 'company-select-previous)
+(define-key company-active-map (kbd "C-n") 'company-select-next)
 
 ;; idle-highlight-mode
 
