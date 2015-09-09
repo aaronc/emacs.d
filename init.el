@@ -6,7 +6,9 @@
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
 ;; Add in your own as you wish:
@@ -46,14 +48,25 @@
     clojure-mode
     cider
     clj-refactor
+    typed-clojure-mode
 
     ;; Haskell
     haskell-mode
     purescript-mode
     idris-mode
 
-    ;; Markdown
-    markdown-mode)
+    ;; org
+    org
+    org-plus-contrib
+    htmlize
+
+    ;; etc
+    yasnippet
+    markdown-mode
+    yaml-mode
+    dockerfile-mode
+    scss-mode
+    emmet-mode)
   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
@@ -164,7 +177,7 @@
 
 ;;;; Colors & Appearance
 
-(load-theme 'solarized-dark t)
+(load-theme 'solarized-light t)
 
 (when (display-graphic-p)
   (if (eq system-type 'windows-nt)
@@ -244,8 +257,13 @@
 
 ;; clojure-mode
 
+(require 'clojure-mode)
+
 (add-to-list 'auto-mode-alist '("\\.boot\\'" . clojure-mode))
 (add-to-list 'magic-mode-alist '(".* boot" . clojure-mode))
+
+(define-clojure-indent
+  (ann-protocol 1))
 
 ;; cider
 
@@ -263,6 +281,9 @@
 			     ;; (clj-refactor-mode 1)
 			     ;; (cljr-add-keybindings-with-prefix "C-x C-r")
                              ))
+;; typed-clojure-mode
+
+(add-hook 'clojure-mode-hook 'typed-clojure-mode)
 
 ;;;; Platform-specific stuff
 
@@ -298,8 +319,7 @@
    (quote
     ("e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flx-ido-mode t)
- '(magit-use-overlays nil))
-(custom-set-faces
+ '(magit-use-overlays nil)) (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
@@ -330,4 +350,47 @@
 ;; markdown
 
 (add-hook 'markdown-mode 'visual-line-mode)
+
+;; org mode
+
+(require 'org)
+;; (require 'ob-clojure)
+
+(define-key org-mode-map (kbd "M-a") 'helm-mini)
+(define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
+
+(setq org-confirm-babel-evaluate nil)
+
+(setq org-html-validation-link nil)
+
+;; (setq org-babel-clojure-backend 'cider)
+
+(require 'ob)
+
+(add-to-list 'org-babel-tangle-lang-exts '("clojure" . "clj"))
+
+(defvar org-babel-default-header-args:clojure 
+  '((:results . "silent")))
+
+(defun org-babel-execute:clojure (body params)
+  "Execute a block of Clojure code with Babel."
+  (cider-interactive-eval body))
+
+(defun org-src-mode-clojure-hook ()
+  (if org-src--overlay
+    (set (make-local-variable 'cider-buffer-ns) 
+         (with-current-buffer (overlay-buffer org-src--overlay) cider-buffer-ns))
+    (fci-mode -1)))
+
+(add-hook 'org-src-mode-hook 'org-src-mode-clojure-hook)
+
+(provide 'ob-clojure)
+
+
+;; yasnippet
+(require 'yasnippet)
+(setq yas-snippet-dirs
+      '("~.emacs.d/snippets"))
+(yas-global-mode 1)
+
 
