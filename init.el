@@ -162,6 +162,12 @@
 (setq projectile-indexing-method 'alien)
 (setq projectile-enable-caching t)
 
+;; yasnippet
+(require 'yasnippet)
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"))
+(yas-global-mode 1)
+
 ;; company
 (require 'company)
 
@@ -356,12 +362,16 @@
 (require 'org)
 ;; (require 'ob-clojure)
 
+(defun clj-snippet ()
+  (yas-expand))
+
 (define-key org-mode-map (kbd "M-a") 'helm-mini)
+(define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
 (define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
 
 (setq org-confirm-babel-evaluate nil)
-
 (setq org-html-validation-link nil)
+(setq org-src-preserve-indentation 't)
 
 ;; (setq org-babel-clojure-backend 'cider)
 
@@ -372,7 +382,7 @@
 (defvar org-babel-default-header-args:clojure 
   '((:results . "silent")))
 
-(defun org-babel-execute:clojure (body params)
+(defun org-babel-execut:clojure (body params)
   "Execute a block of Clojure code with Babel."
   (cider-interactive-eval body))
 
@@ -385,12 +395,3 @@
 (add-hook 'org-src-mode-hook 'org-src-mode-clojure-hook)
 
 (provide 'ob-clojure)
-
-
-;; yasnippet
-(require 'yasnippet)
-(setq yas-snippet-dirs
-      '("~.emacs.d/snippets"))
-(yas-global-mode 1)
-
-

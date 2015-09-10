@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: clj
+# key: clj
+# binding: C-c C-x j
+# --
+#+BEGIN_SRC clojure
+$0
+#+END_SRC
