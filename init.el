@@ -277,7 +277,7 @@
 
 (setq cider-prompt-save-file-on-load nil)
 (setq cider-auto-select-error-buffer nil)
-(setq cider-show-error-buffer nil)
+(setq cider-show-error-buffer 'except-in-repl)
 (define-key cider-mode-map (kbd "C-c C-v") 'cider-visit-error-buffer)
 (cider-repl-toggle-pretty-printing)
 
@@ -362,9 +362,6 @@
 (require 'org)
 ;; (require 'ob-clojure)
 
-(defun clj-snippet ()
-  (yas-expand))
-
 (define-key org-mode-map (kbd "M-a") 'helm-mini)
 (define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
 (define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
@@ -395,3 +392,5 @@
 (add-hook 'org-src-mode-hook 'org-src-mode-clojure-hook)
 
 (provide 'ob-clojure)
+
+(add-to-list 'org-babel-tangle-lang-exts '("idris" . "idr"))
