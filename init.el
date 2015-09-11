@@ -271,6 +271,8 @@
 (define-clojure-indent
   (ann-protocol 1))
 
+(define-key clojure-mode-map (kbd "C-c C-j") 'org-babel-tangle-jump-to-org)
+
 ;; cider
 
 (require 'cider)
@@ -325,7 +327,12 @@
    (quote
     ("e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flx-ido-mode t)
- '(magit-use-overlays nil)) (custom-set-faces
+ '(magit-use-overlays nil)
+ '(safe-local-variable-values
+   (quote
+    ((org-src-preserve-indentation . t)
+     (org-html-validation-link)))))
+(custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
@@ -364,11 +371,28 @@
 
 (define-key org-mode-map (kbd "M-a") 'helm-mini)
 (define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
-(define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
+;; (define-key org-mode-map (kbd "C-c e") 'org-edit-special)
 
+;; No need to prompt on each evaluation
 (setq org-confirm-babel-evaluate nil)
+;; Turn off annoying html validation link in export
 (setq org-html-validation-link nil)
+;; Preserve source indentation when using edit buffer
 (setq org-src-preserve-indentation 't)
+;; Set tangled files to read-only by default
+(setq org-babel-default-header-args
+      (cons '(:tangle-mode . #o444)
+            (assq-delete-all :tangle-mode org-babel-default-header-args)))
+;; Make parent directories where needed by default
+(setq org-babel-default-header-args
+      (cons '(:mkdirp . "yes")
+            (assq-delete-all :mkdirp org-babel-default-header-args)))
+;; Relative paths don't seem to be working right
+(setq org-babel-tangle-use-relative-file-links nil)
+;; edit in current window
+(setq org-src-window-setup 'current-window)
+(setq org-src-ask-before-returning-to-edit-buffer nil)
+
 
 ;; (setq org-babel-clojure-backend 'cider)
 
@@ -393,4 +417,17 @@
 
 (provide 'ob-clojure)
 
+(setq org-babel-default-header-args:clojure
+      (cons '(:comments . "noweb")
+            (assq-delete-all :comments org-babel-default-header-args:clojure)))
+
 (add-to-list 'org-babel-tangle-lang-exts '("idris" . "idr"))
+
+(defun post-tangle ()
+  (let ((filename (buffer-file-name (current-buffer))))
+    (when (string-match "^.*\.clj[cs]?$" filename)
+      (cider-load-buffer)
+      (cider-interactive-eval
+       "(when-let [check-ns (resolve 'clojure.core.typed/check-ns)] (check-ns))"))))
+
+(add-hook 'org-babel-post-tangle-hook 'post-tangle)
