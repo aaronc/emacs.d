@@ -421,8 +421,6 @@
       (cons '(:comments . "noweb")
             (assq-delete-all :comments org-babel-default-header-args:clojure)))
 
-(add-to-list 'org-babel-tangle-lang-exts '("idris" . "idr"))
-
 (defun post-tangle ()
   (let ((filename (buffer-file-name (current-buffer))))
     (when (string-match "^.*\.clj[cs]?$" filename)
@@ -431,3 +429,5 @@
        "(when-let [check-ns (resolve 'clojure.core.typed/check-ns)] (check-ns))"))))
 
 (add-hook 'org-babel-post-tangle-hook 'post-tangle)
+
+(add-to-list 'org-babel-tangle-lang-exts '("idris" . "idr"))
