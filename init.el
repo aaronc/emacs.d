@@ -32,6 +32,7 @@
     idle-highlight-mode
     minimap
     dedicated
+    smart-mode-line
 
     ;;;; Colors & Appearance
     solarized-theme
@@ -66,7 +67,8 @@
     yaml-mode
     dockerfile-mode
     scss-mode
-    emmet-mode)
+    emmet-mode
+    writeroom-mode)
   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
@@ -269,7 +271,8 @@
 (add-to-list 'magic-mode-alist '(".* boot" . clojure-mode))
 
 (define-clojure-indent
-  (ann-protocol 1))
+  (ann-protocol 1)
+  (data-case 1))
 
 (define-key clojure-mode-map (kbd "C-c C-j") 'org-babel-tangle-jump-to-org)
 
@@ -281,7 +284,8 @@
 (setq cider-auto-select-error-buffer nil)
 (setq cider-show-error-buffer 'except-in-repl)
 (define-key cider-mode-map (kbd "C-c C-v") 'cider-visit-error-buffer)
-(cider-repl-toggle-pretty-printing)
+(define-key cider-repl-mode-map (kbd "C-c C-v") 'cider-visit-error-buffer)
+(setq cider-repl-use-pretty-printing nil)
 
 ;; clj-refactor
 
@@ -325,7 +329,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
+    ("a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flx-ido-mode t)
  '(magit-use-overlays nil)
  '(safe-local-variable-values
@@ -371,6 +375,7 @@
 
 (define-key org-mode-map (kbd "M-a") 'helm-mini)
 (define-key org-mode-map (kbd "C-c C-h") 'org-html-export-to-html)
+(define-key org-mode-map (kbd "C-c C-z") 'cider-switch-to-repl-buffer)
 ;; (define-key org-mode-map (kbd "C-c e") 'org-edit-special)
 
 ;; No need to prompt on each evaluation
@@ -403,7 +408,7 @@
 (defvar org-babel-default-header-args:clojure 
   '((:results . "silent")))
 
-(defun org-babel-execut:clojure (body params)
+(defun org-babel-execute:clojure (body params)
   "Execute a block of Clojure code with Babel."
   (cider-interactive-eval body))
 
@@ -423,11 +428,60 @@
 
 (defun post-tangle ()
   (let ((filename (buffer-file-name (current-buffer))))
+    (print "post-tangle")
+    (print filename)
     (when (string-match "^.*\.clj[cs]?$" filename)
-      (cider-load-buffer)
-      (cider-interactive-eval
-       "(when-let [check-ns (resolve 'clojure.core.typed/check-ns)] (check-ns))"))))
+      (cider-load-file filename)
+      ;; (cider-load-buffer (current-buffer))
+      ;; (cider-interactive-eval
+      ;;  ;; "(when-let [check-ns (resolve 'clojure.core.typed/check-ns)] (check-ns))"
+      ;;  "(clojure.test/run-tests)")
+      )))
 
 (add-hook 'org-babel-post-tangle-hook 'post-tangle)
 
 (add-to-list 'org-babel-tangle-lang-exts '("idris" . "idr"))
+
+(require 'ob-sh)
+
+(org-babel-do-load-languages 'org-babel-load-languages '((sh . t)))
+
+;; smart-mode-line
+(require 'smart-mode-line)
+
+(setq powerline-arrow-shape 'curve)
+(setq powerline-default-separator-dir '(left . left))
+(setq sml/theme 'solarized)
+(sml/setup)
+
+;; haskell
+(require 'haskell-mode)
+
+(custom-set-variables '(haskell-process-type 'cabal-repl))
+(custom-set-variables
+  '(haskell-process-suggest-remove-import-lines t)
+  '(haskell-process-auto-import-loaded-modules t)
+  '(haskell-process-log t))
+(eval-after-load 'haskell-mode '(progn
+  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+  (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+  (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
+  (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
+  (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
+  (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
+  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)))
+(eval-after-load 'haskell-cabal '(progn
+  (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+  (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+  (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
+  (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)))
+
+;; idris
+
+(setq idris-enable-elab-prover 't)
+
+;; writeroom
+
+(setq writeroom-width 120)
+
+;; (load "./ebnf-mode.el")
