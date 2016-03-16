@@ -1,3 +1,4 @@
+;; (load "~/emacs-haskell-config/init.el")
 ;; package
 
 (require 'package)
@@ -53,8 +54,14 @@
 
     ;; Haskell
     haskell-mode
-    purescript-mode
+    shm
+    hindent
+    ;;flycheck-haskell
+
+    ;; Idris
     idris-mode
+    popwin
+    helm-idris
 
     ;; org
     org
@@ -105,7 +112,7 @@
 ;; indentation
 
 (setq-default indent-tabs-mode nil)
-(setq tab-width 2)
+(setq-default tab-width 2)
 
 
 ;; helm
@@ -113,10 +120,11 @@
 (require 'helm-config)
 (helm-mode 1)
 (global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
 
-(setq helm-M-x-fuzzy-match 't) 
-(setq helm-buffers-fuzzy-matching 't) 
-(setq helm-recentf-fuzzy-match 't) 
+(setq helm-M-x-fuzzy-match 't)
+(setq helm-buffers-fuzzy-matching 't)
+(setq helm-recentf-fuzzy-match 't)
 
 ;; smex
 (global-set-key (kbd "M-X") 'smex)
@@ -130,7 +138,6 @@
 (require 'evil)
 (require 'evil-visualstar)
 (evil-mode 1)
-(global-evil-surround-mode 1)
 
 ;; window-numbering
 
@@ -168,18 +175,26 @@
 (require 'yasnippet)
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"))
-(yas-global-mode 1)
+;; (yas-global-mode 1)
 
 ;; company
 (require 'company)
 
-(add-hook 'after-init-hook 'global-company-mode)
+;; (add-hook 'after-init-hook 'global-company-mode)
 
-(global-set-key (kbd "C-SPC") 'company-complete)
-(global-set-key (kbd "TAB") 'company-indent-or-complete-common)
+;; (global-set-key (kbd "TAB") 'company-indent-or-complete-common)
 
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
 (define-key company-active-map (kbd "C-n") 'company-select-next)
+(setq company-require-match 'never)
+(setq company-auto-complete t)
+
+(require 'auto-complete)
+(add-hook 'after-init-hook 'global-auto-complete-mode)
+(global-set-key (kbd "TAB") 'auto-complete)
+(define-key ac-completing-map (kbd "C-p") 'ac-previous)
+(define-key ac-completing-map (kbd "C-n") 'ac-next)
+
 
 ;; idle-highlight-mode
 
@@ -211,8 +226,8 @@
 ;; smartparens
 (require 'smartparens-config)
 
-(smartparens-global-mode 1)
-(show-smartparens-global-mode t)
+;; (smartparens-global-mode 1)
+;; (show-smartparens-global-mode t)
 
 (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
@@ -331,6 +346,7 @@
    (quote
     ("a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flx-ido-mode t)
+ '(idris-hole-show-on-load nil)
  '(magit-use-overlays nil)
  '(safe-local-variable-values
    (quote
@@ -405,7 +421,7 @@
 
 (add-to-list 'org-babel-tangle-lang-exts '("clojure" . "clj"))
 
-(defvar org-babel-default-header-args:clojure 
+(defvar org-babel-default-header-args:clojure
   '((:results . "silent")))
 
 (defun org-babel-execute:clojure (body params)
@@ -414,7 +430,7 @@
 
 (defun org-src-mode-clojure-hook ()
   (if org-src--overlay
-    (set (make-local-variable 'cider-buffer-ns) 
+    (set (make-local-variable 'cider-buffer-ns)
          (with-current-buffer (overlay-buffer org-src--overlay) cider-buffer-ns))
     (fci-mode -1)))
 
@@ -451,34 +467,71 @@
 
 (setq powerline-arrow-shape 'curve)
 (setq powerline-default-separator-dir '(left . left))
-(setq sml/theme 'solarized)
+;;(setq sml/theme 'solarized)
 (sml/setup)
 
 ;; haskell
-(require 'haskell-mode)
 
-(custom-set-variables '(haskell-process-type 'cabal-repl))
+(require 'shm)
+(require 'hindent)
+(require 'shm-case-split)
+(require 'shm-reformat)
+(require 'haskell)
+(require 'haskell-mode)
+(require 'hindent)
+(require 'haskell-process)
+(require 'haskell-simple-indent)
+(require 'haskell-interactive-mode)
+(require 'haskell-font-lock)
+
 (custom-set-variables
-  '(haskell-process-suggest-remove-import-lines t)
-  '(haskell-process-auto-import-loaded-modules t)
-  '(haskell-process-log t))
-(eval-after-load 'haskell-mode '(progn
-  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
-  (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-  (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
-  (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
-  (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
-  (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
-  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)))
-(eval-after-load 'haskell-cabal '(progn
-  (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-  (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
-  (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
-  (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)))
+ '(haskell-process-type 'stack-ghci)
+ '(haskell-process-args-stack-ghci
+   '("--ghc-options=-ferror-spans" "--with-ghc=ghci-ng"))
+ '(haskell-process-args-cabal-repl
+   '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
+ '(haskell-notify-p t)
+ '(haskell-stylish-on-save nil)
+ '(haskell-tags-on-save nil)
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t)
+ '(haskell-process-reload-with-fbytecode nil)
+ '(haskell-process-use-presentation-mode t)
+ '(haskell-interactive-mode-include-file-name nil)
+ '(haskell-interactive-mode-eval-pretty nil)
+ '(shm-use-presentation-mode t)
+ '(shm-auto-insert-skeletons t)
+ '(shm-auto-insert-bangs t)
+ '(haskell-process-suggest-haskell-docs-imports t)
+ '(haskell-interactive-mode-eval-mode 'haskell-mode)
+ '(haskell-process-path-ghci "ghci-ng")
+ '(haskell-process-args-ghci '("-ferror-spans")))
+
+(add-hook 'haskell-mode-hook 'structured-haskell-mode)
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
+(add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+
+;; Keybindings
+
+(define-key shm-map (kbd "M-a") 'helm-mini)
+(define-key haskell-interactive-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
 
 ;; idris
 
+(require 'popwin)
 (setq idris-enable-elab-prover 't)
+(push 'idris-compiler-notes-mode
+      popwin:special-display-config)
+(push '(idris-repl-mode
+        :height 0.2
+        :noselect nil
+        :position bottom
+        :stick t)
+      popwin:special-display-config)
+(add-hook 'idris-mode-hook 'popwin-mode)
+(add-hook 'idris-mode-hook 'auto-complete-mode)
 
 ;; writeroom
 

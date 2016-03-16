@@ -1,0 +1,3 @@
+[submodule "idris-mode"]
+	path = idris-mode
+	url = git@github.com:aaronc/idris-mode.git
