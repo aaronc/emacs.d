@@ -29,6 +29,7 @@
     projectile
     helm-projectile
     company
+    company-flx
     helm-company
     idle-highlight-mode
     minimap
@@ -56,6 +57,8 @@
     haskell-mode
     shm
     hindent
+    company-ghc
+    flymake-hlint
     ;;flycheck-haskell
 
     ;; Idris
@@ -75,7 +78,8 @@
     dockerfile-mode
     scss-mode
     emmet-mode
-    writeroom-mode)
+    writeroom-mode
+    tide)
   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
@@ -113,7 +117,8 @@
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 2)
-
+(setq c-basic-offset 2)
+(setq js-indent-level 2)
 
 ;; helm
 
@@ -180,18 +185,36 @@
 ;; company
 (require 'company)
 
-;; (add-hook 'after-init-hook 'global-company-mode)
+(add-hook 'after-init-hook 'global-company-mode)
 
-;; (global-set-key (kbd "TAB") 'company-indent-or-complete-common)
+(add-to-list 'company-backends '(company-capf company-dabbrev-code))
+
+(global-set-key (kbd "TAB") 'company-indent-or-complete-common)
+(global-set-key (kbd "C-SPC") 'company-complete)
 
 (define-key company-active-map (kbd "C-p") 'company-select-previous)
 (define-key company-active-map (kbd "C-n") 'company-select-next)
+(define-key company-active-map [tab] 'company-complete-common-or-cycle)
+(define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+(define-key company-active-map (kbd "<backtab>") 'company-select-previous)
 (setq company-require-match 'never)
 (setq company-auto-complete t)
+(setq company-auto-complete-chars 1)
+(setq company-idle-delay 0.0)
+(setq company-echo-delay 0)
+(setq company-tooltip-limit 25) 
+(setq company-show-numbers t)
+(setq company-tooltip-margin 1)
+(setq company-tooltip-minimum-width 30)
+(add-to-list 'completion-styles 'initials t)
+
+(require 'company-flx)
+(with-eval-after-load 'company
+  (company-flx-mode +1))
 
 (require 'auto-complete)
-(add-hook 'after-init-hook 'global-auto-complete-mode)
-(global-set-key (kbd "TAB") 'auto-complete)
+;; (add-hook 'after-init-hook 'global-auto-complete-mode)
+;; (global-set-key (kbd "TAB") 'auto-complete)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 
@@ -231,6 +254,7 @@
 
 (add-hook 'clojure-mode-hook 'smartparens-strict-mode)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+(add-hook 'haskell-mode-hook 'smartparens-strict-mode)
 
 (define-minor-mode sp-evil-lisp-mode "Smartparens Evil Lisp Mode"
   :keymap (make-sparse-keymap))
@@ -480,9 +504,12 @@
 (require 'haskell-mode)
 (require 'hindent)
 (require 'haskell-process)
-(require 'haskell-simple-indent)
+;;(require 'haskell-simple-indent)
 (require 'haskell-interactive-mode)
 (require 'haskell-font-lock)
+
+;;(ghc-comp-init)
+;; (add-to-list 'company-backends 'company-ghc)
 
 (custom-set-variables
  '(haskell-process-type 'stack-ghci)
@@ -493,7 +520,7 @@
  '(haskell-notify-p t)
  '(haskell-stylish-on-save nil)
  '(haskell-tags-on-save nil)
- '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-suggest-remove-import-lines nil)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-reload-with-fbytecode nil)
@@ -508,15 +535,35 @@
  '(haskell-process-path-ghci "ghci-ng")
  '(haskell-process-args-ghci '("-ferror-spans")))
 
+(autoload 'ghc-init "ghc" nil t)
+(autoload 'ghc-debug "ghc" nil t)
+(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
 (add-hook 'haskell-mode-hook 'structured-haskell-mode)
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(add-hook 'haskell-mode-hook 'flymake-hlint-load)
 (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
 (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+
+(add-to-list 'company-backends '(company-ghc :with company-dabbrev-code))
+(setq company-ghc-show-info nil)
+(setq company-ghc-show-module 't)
 
 ;; Keybindings
 
 (define-key shm-map (kbd "M-a") 'helm-mini)
+(define-key shm-repl-map (kbd "M-a") 'helm-mini)
+(defun company-auto-complete-or-shm/tab ()
+  (interactive)
+  (cond
+   ((save-excursion (goto-char (line-beginning-position))
+                    (looking-at "^[ ]*$"))
+    (shm/tab))
+   (t (company-complete))))
+(define-key shm-map (kbd "TAB") 'company-auto-complete-or-shm/tab)
 (define-key haskell-interactive-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+
+(set-face-background 'shm-current-face "#eee8d5")
+(set-face-background 'shm-quarantine-face "lemonchiffon")
 
 ;; idris
 
@@ -538,3 +585,41 @@
 (setq writeroom-width 120)
 
 ;; (load "./ebnf-mode.el")
+
+;; Typescript
+
+;; sample config
+(add-hook 'typescript-mode-hook
+          (lambda ()
+            (tide-setup)
+            (flycheck-mode +1)
+            (setq flycheck-check-syntax-automatically '(save mode-enabled))
+            (eldoc-mode +1)
+            ;; company is an optional dependency. You have to
+            ;; install it separately via package-install
+            (company-mode-on)))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+;; format options
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil :tabSize 2))
+;; see https://github.com/Microsoft/TypeScript/blob/cc58e2d7eb144f0b2ff89e6a6685fb4deaa24fde/src/server/protocol.d.ts#L421-473 for the full list available options
+
+;; Tide can be used along with web-mode to edit tsx files
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (tide-setup)
+              (flycheck-mode +1)
+              (setq flycheck-check-syntax-automatically '(save mode-enabled))
+              (eldoc-mode +1)
+              (company-mode-on))))
+
+(require 'flycheck-flow)
+(add-hook 'javascript-mode-hook 'flycheck-mode)
