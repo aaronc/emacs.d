@@ -536,7 +536,7 @@
 (require 'haskell-font-lock)
 
 ;;(ghc-comp-init)
-;; (add-to-list 'company-backends 'company-ghc)
+;;(add-to-list 'company-backends 'company-ghc)
 
 
 
@@ -628,4 +628,5 @@
               (company-mode-on))))
 
 (require 'flycheck-flow)
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 (add-hook 'javascript-mode-hook 'flycheck-mode)
