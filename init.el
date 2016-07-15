@@ -29,7 +29,8 @@
     projectile
     helm-projectile
     company
-    company-flx
+    ;;company-flx
+    auto-complete
     helm-company
     idle-highlight-mode
     minimap
@@ -59,6 +60,7 @@
     hindent
     company-ghc
     flymake-hlint
+    intero
     ;;flycheck-haskell
 
     ;; Idris
@@ -79,7 +81,10 @@
     scss-mode
     emmet-mode
     writeroom-mode
-    tide)
+    web-mode
+    flycheck-flow
+    ;;tide
+)
   "cider list of packages to ensure are installed at launch.")
 
 (when (not package-archive-contents)
@@ -208,9 +213,9 @@
 (setq company-tooltip-minimum-width 30)
 (add-to-list 'completion-styles 'initials t)
 
-(require 'company-flx)
-(with-eval-after-load 'company
-  (company-flx-mode +1))
+;;(require 'company-flx)
+;;(with-eval-after-load 'company
+;;  (company-flx-mode +1))
 
 (require 'auto-complete)
 ;; (add-hook 'after-init-hook 'global-auto-complete-mode)
@@ -228,7 +233,7 @@
 (when (display-graphic-p)
   (if (eq system-type 'windows-nt)
     (set-face-attribute 'default nil :font "Consolas-14")
-    (set-face-attribute 'default nil :font "Inconsolata-14")))
+    (set-face-attribute 'default nil :font "Inconsolata-20" :bold 't)))
 
 (defun enable-transparency ()
   (interactive)
@@ -370,18 +375,40 @@
    (quote
     ("a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flx-ido-mode t)
+ ;; '(haskell-interactive-mode-eval-mode (quote haskell-mode))
+ ;; '(haskell-interactive-mode-eval-pretty nil)
+ ;; '(haskell-interactive-mode-include-file-name nil)
+ ;; '(haskell-notify-p t)
+ ;; '(haskell-process-args-cabal-repl (quote ("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng")))
+ ;; '(haskell-process-args-ghci (quote ("-ferror-spans")))
+ ;; '(haskell-process-args-stack-ghci
+ ;;   (quote
+ ;;    ("--ghc-options=-ferror-spans" "--with-ghc=ghci-ng")))
+ ;; '(haskell-process-auto-import-loaded-modules t)
+ ;; '(haskell-process-log t)
+ ;; '(haskell-process-path-ghci "ghci-ng")
+ ;; '(haskell-process-reload-with-fbytecode nil)
+ ;; '(haskell-process-suggest-haskell-docs-imports t)
+ ;; '(haskell-process-suggest-remove-import-lines nil)
+ ;; '(haskell-process-type (quote stack-ghci))
+ ;; '(haskell-process-use-presentation-mode t)
+ ;; '(haskell-stylish-on-save nil)
+ ;; '(haskell-tags-on-save nil)
  '(idris-hole-show-on-load nil)
  '(magit-use-overlays nil)
  '(safe-local-variable-values
    (quote
     ((org-src-preserve-indentation . t)
-     (org-html-validation-link)))))
+     (org-html-validation-link))))
+ '(shm-auto-insert-bangs t)
+ '(shm-auto-insert-skeletons t)
+ '(shm-use-presentation-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:inherit nil :stipple nil :background "#fdf6e3" :foreground "#657b83" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight bold :height 161 :width normal :foundry "nil" :family "Inconsolata")))))
 
 ;; Dedicated mode copy
 (defvar dedicated-mode nil
@@ -511,40 +538,19 @@
 ;;(ghc-comp-init)
 ;; (add-to-list 'company-backends 'company-ghc)
 
-(custom-set-variables
- '(haskell-process-type 'stack-ghci)
- '(haskell-process-args-stack-ghci
-   '("--ghc-options=-ferror-spans" "--with-ghc=ghci-ng"))
- '(haskell-process-args-cabal-repl
-   '("--ghc-option=-ferror-spans" "--with-ghc=ghci-ng"))
- '(haskell-notify-p t)
- '(haskell-stylish-on-save nil)
- '(haskell-tags-on-save nil)
- '(haskell-process-suggest-remove-import-lines nil)
- '(haskell-process-auto-import-loaded-modules t)
- '(haskell-process-log t)
- '(haskell-process-reload-with-fbytecode nil)
- '(haskell-process-use-presentation-mode t)
- '(haskell-interactive-mode-include-file-name nil)
- '(haskell-interactive-mode-eval-pretty nil)
- '(shm-use-presentation-mode t)
- '(shm-auto-insert-skeletons t)
- '(shm-auto-insert-bangs t)
- '(haskell-process-suggest-haskell-docs-imports t)
- '(haskell-interactive-mode-eval-mode 'haskell-mode)
- '(haskell-process-path-ghci "ghci-ng")
- '(haskell-process-args-ghci '("-ferror-spans")))
+
 
 (autoload 'ghc-init "ghc" nil t)
 (autoload 'ghc-debug "ghc" nil t)
-(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-(add-hook 'haskell-mode-hook 'structured-haskell-mode)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-(add-hook 'haskell-mode-hook 'flymake-hlint-load)
-(add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
-(add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
+;; (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+;; (add-hook 'haskell-mode-hook 'structured-haskell-mode)
+;;(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(add-hook 'haskell-mode-hook 'intero-mode)
+;; (add-hook 'haskell-mode-hook 'flymake-hlint-load)
+;; (add-hook 'haskell-interactive-mode-hook 'structured-haskell-repl-mode)
+;; (add-hook 'haskell-mode-hook 'haskell-auto-insert-module-template)
 
-(add-to-list 'company-backends '(company-ghc :with company-dabbrev-code))
+;; (add-to-list 'company-backends '(company-ghc :with company-dabbrev-code))
 (setq company-ghc-show-info nil)
 (setq company-ghc-show-module 't)
 
